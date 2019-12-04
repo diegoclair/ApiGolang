@@ -1,3 +1,6 @@
+//SetMiddlewareJSON: This will format all responses to JSON
+//SetMiddlewareAuthentication: This will check for the validity of the authentication token provided.
+
 package middlewares
 
 import (

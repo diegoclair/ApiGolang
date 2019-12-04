@@ -40,62 +40,61 @@ var sales = []models.Sale{
 	},
 }
 
-func LoadBuy(db *gorm.DB) {
+func Load(db *gorm.DB) {
 
-	err := db.Debug().DropTableIfExists(&models.Buy{}, &models.User{}).Error
-	if err != nil {
-		log.Fatalf("cannot drop table: %v", err)
+	//Buy----------------------------------------------------------------------------------
+	errBuy := db.Debug().DropTableIfExists(&models.Buy{}, &models.User{}).Error
+	if errBuy != nil {
+		log.Fatalf("cannot drop table: %v", errBuy)
 	}
-	err = db.Debug().AutoMigrate(&models.User{}, &models.Buy{}).Error
-	if err != nil {
-		log.Fatalf("cannot migrate table: %v", err)
+	errBuy = db.Debug().AutoMigrate(&models.User{}, &models.Buy{}).Error
+	if errBuy != nil {
+		log.Fatalf("cannot migrate table: %v", errBuy)
 	}
 
-	err = db.Debug().Model(&models.Buy{}).AddForeignKey("author_id", "users(id)", "cascade", "cascade").Error
-	if err != nil {
-		log.Fatalf("attaching foreign key error: %v", err)
+	errBuy = db.Debug().Model(&models.Buy{}).AddForeignKey("author_id", "users(id)", "cascade", "cascade").Error
+	if errBuy != nil {
+		log.Fatalf("attaching foreign key error: %v", errBuy)
 	}
 
 	for i, _ := range users {
-		err = db.Debug().Model(&models.User{}).Create(&users[i]).Error
-		if err != nil {
-			log.Fatalf("cannot seed users table: %v", err)
+		errBuy = db.Debug().Model(&models.User{}).Create(&users[i]).Error
+		if errBuy != nil {
+			log.Fatalf("cannot seed users table: %v", errBuy)
 		}
 		buys[i].AuthorID = users[i].ID
 
-		err = db.Debug().Model(&models.Buy{}).Create(&buys[i]).Error
-		if err != nil {
-			log.Fatalf("cannot seed buys table: %v", err)
+		errBuy = db.Debug().Model(&models.Buy{}).Create(&buys[i]).Error
+		if errBuy != nil {
+			log.Fatalf("cannot seed buys table: %v", errBuy)
 		}
 	}
-}
 
-func LoadSale(db *gorm.DB) {
-
-	err := db.Debug().DropTableIfExists(&models.Sale{}, &models.User{}).Error
-	if err != nil {
-		log.Fatalf("cannot drop table: %v", err)
+	//Sale----------------------------------------------------------------------------------
+	errSale := db.Debug().DropTableIfExists(&models.Sale{}, &models.User{}).Error
+	if errSale != nil {
+		log.Fatalf("cannot drop table: %v", errSale)
 	}
-	err = db.Debug().AutoMigrate(&models.User{}, &models.Sale{}).Error
-	if err != nil {
-		log.Fatalf("cannot migrate table: %v", err)
+	errSale = db.Debug().AutoMigrate(&models.User{}, &models.Sale{}).Error
+	if errSale != nil {
+		log.Fatalf("cannot migrate table: %v", errSale)
 	}
 
-	err = db.Debug().Model(&models.Sale{}).AddForeignKey("author_id", "users(id)", "cascade", "cascade").Error
-	if err != nil {
-		log.Fatalf("attaching foreign key error: %v", err)
+	errSale = db.Debug().Model(&models.Sale{}).AddForeignKey("author_id", "users(id)", "cascade", "cascade").Error
+	if errSale != nil {
+		log.Fatalf("attaching foreign key error: %v", errSale)
 	}
 
 	for i, _ := range users {
-		err = db.Debug().Model(&models.User{}).Create(&users[i]).Error
-		if err != nil {
-			log.Fatalf("cannot seed users table: %v", err)
+		errSale = db.Debug().Model(&models.User{}).Create(&users[i]).Error
+		if errSale != nil {
+			log.Fatalf("cannot seed users table: %v", errSale)
 		}
 		sales[i].AuthorID = users[i].ID
 
-		err = db.Debug().Model(&models.Sale{}).Create(&sales[i]).Error
-		if err != nil {
-			log.Fatalf("cannot seed sales table: %v", err)
+		errSale = db.Debug().Model(&models.Sale{}).Create(&sales[i]).Error
+		if errSale != nil {
+			log.Fatalf("cannot seed sales table: %v", errSale)
 		}
 	}
 }

@@ -14,18 +14,10 @@ var server = controllers.Server{}
 
 func Run() {
 
-	var errBuy error
-	errBuy = godotenv.LoadBuy()
-	if errBuy != nil {
-		log.Fatalf("Error getting env, not comming through %v", errBuy)
-	} else {
-		fmt.Println("We are getting the env values")
-	}
-
-	var errSale error
-	errSale = godotenv.LoadSale()
-	if errSale != nil {
-		log.Fatalf("Error getting env, not comming through %v", errSale)
+	var err error
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error getting env, not comming through %v", err)
 	} else {
 		fmt.Println("We are getting the env values")
 	}

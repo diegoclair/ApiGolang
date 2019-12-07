@@ -5,6 +5,7 @@ import (
 	"html"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/badoux/checkmail"
 	"github.com/jinzhu/gorm"
@@ -17,6 +18,7 @@ type User struct {
 	Email		string		`gorm:"size:100;not null;unique" json:"email"`
 	Password	string		`gorm:"size:100;not null;" json:"password"`
 	BirthDate	string		`json:"birthdate"`
+	CreatedAt 	time.Time 	`gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
 func Hash(password string) ([]byte, error) {
@@ -41,6 +43,7 @@ func (u *User) Prepare() {
 	u.FullName = html.EscapeString(strings.TrimSpace(u.FullName))
 	u.Email = html.EscapeString(strings.TrimSpace(u.Email))
 	u.BirthDate = html.EscapeString(strings.TrimSpace(u.BirthDate))
+	u.CreatedAt = time.Now()
 }
 
 func (u *User) Validate(action string) error {

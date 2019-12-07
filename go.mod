@@ -9,5 +9,5 @@ require (
 	github.com/jinzhu/gorm v1.9.11
 	github.com/joho/godotenv v1.3.0
 	golang.org/x/crypto v0.0.0-20191202143827-86a70503ff7e
-	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+	gopkg.in/go-playground/assert.v1 v1.2.1
 )

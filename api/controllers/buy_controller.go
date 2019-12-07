@@ -69,6 +69,8 @@ func (server *Server) GetBuys(w http.ResponseWriter, r *http.Request) {
 func (server *Server) GetBuy(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
+
+	// Check if the buy id is valid
 	pid, err := strconv.ParseUint(vars["id"], 10, 64)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)

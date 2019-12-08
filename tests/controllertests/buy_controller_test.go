@@ -34,54 +34,48 @@ func TestCreateBuy(t *testing.T) {
 	samples := []struct {
 		inputJSON    	string
 		statusCode   	int
-		bitcoinAmount	string
+		bitcoin_amount	string
 		author_id    	uint32
 		tokenGiven   	string
 		errorMessage 	string
 	}{
 		{
-			inputJSON:    `{"bitcoinAmount":"0.0050", "author_id": 1}`,
+			inputJSON:    `{"bitcoin_amount":"0.0050", "author_id": 1}`,
 			statusCode:   	201,
 			tokenGiven:   	tokenString,
-			bitcoinAmount:  "0.0050",
+			bitcoin_amount:  "0.0050",
 			author_id:    	user.ID,
 			errorMessage: 	"",
 		},
 		{
-			inputJSON:    `{"bitcoinAmount":"0.0050", "author_id": 1}`,
-			statusCode:   500,
-			tokenGiven:   tokenString,
-			errorMessage: "Title Already Taken",
-		},
-		{
 			// When no token is passed
-			inputJSON:    `{"bitcoinAmount":"When no token is passed", "author_id": 1}`,
+			inputJSON:    `{"bitcoin_amount":"0.00801", "author_id": 1}`,
 			statusCode:   401,
 			tokenGiven:   "",
 			errorMessage: "Unauthorized",
 		},
 		{
 			// When incorrect token is passed
-			inputJSON:    `{"bitcoinAmount":"When incorrect token is passed", "author_id": 1}`,
+			inputJSON:    `{"bitcoin_amount":"0.0054747", "author_id": 1}`,
 			statusCode:   401,
 			tokenGiven:   "This is an incorrect token",
 			errorMessage: "Unauthorized",
 		},
 		{
-			inputJSON:    `{"bitcoinAmount": "", "author_id": 1}`,
+			inputJSON:    `{"bitcoin_amount": "", "author_id": 1}`,
 			statusCode:   422,
 			tokenGiven:   tokenString,
-			errorMessage: "Required Title",
+			errorMessage: "Required Bitcoin Amount",
 		},
 		{
-			inputJSON:    `{"bitcoinAmount":"0.0050"}`,
+			inputJSON:    `{"bitcoin_amount":"0.0050"}`,
 			statusCode:   422,
 			tokenGiven:   tokenString,
 			errorMessage: "Required Author",
 		},
 		{
 			// When user 2 uses user 1 token
-			inputJSON:    `{"bitcoinAmount": "0.0050", "author_id": 2}`,
+			inputJSON:    `{"bitcoin_amount": "0.0050", "author_id": 2}`,
 			statusCode:   401,
 			tokenGiven:   tokenString,
 			errorMessage: "Unauthorized",
@@ -106,7 +100,7 @@ func TestCreateBuy(t *testing.T) {
 		}
 		assert.Equal(t, rr.Code, v.statusCode)
 		if v.statusCode == 201 {
-			assert.Equal(t, responseMap["bitcoinAmount"], v.bitcoinAmount)
+			assert.Equal(t, responseMap["bitcoin_amount"], v.bitcoin_amount)
 			assert.Equal(t, responseMap["author_id"], float64(v.author_id)) //just for both ids to have the same type
 		}
 		if v.statusCode == 401 || v.statusCode == 422 || v.statusCode == 500 && v.errorMessage != "" {
@@ -153,14 +147,14 @@ func TestGetBuyByID(t *testing.T) {
 	buySample := []struct {
 		id           	string
 		statusCode   	int
-		bitcoinAmount	string
+		bitcoin_amount	string
 		author_id   	uint32
 		errorMessage 	string
 	}{
 		{
-			id:         strconv.Itoa(int(buy.ID)),
+			id:         	strconv.Itoa(int(buy.ID)),
 			statusCode: 	200,
-			bitcoinAmount:	buy.BitcoinAmount,
+			bitcoin_amount:	buy.BitcoinAmount,
 			author_id:  	buy.AuthorID,
 		},
 		{
@@ -168,28 +162,28 @@ func TestGetBuyByID(t *testing.T) {
 			statusCode: 400,
 		},
 	}
-	for _, v := range buySample {
 
+	for _, v := range buySample {
 		req, err := http.NewRequest("GET", "/buys", nil)
 		if err != nil {
 			t.Errorf("this is the error: %v\n", err)
 		}
-		fmt.Println(req)
 		req = mux.SetURLVars(req, map[string]string{"id": v.id})
 
 		rr := httptest.NewRecorder()
 		handler := http.HandlerFunc(server.GetBuys)
 		handler.ServeHTTP(rr, req)
-
 		responseMap := make(map[string]interface{})
 		err = json.Unmarshal([]byte(rr.Body.String()), &responseMap)
+
 		if err != nil {
-			log.Fatalf("Cannot convert to json2: %v", err)
+			log.Fatalf("Cannot convert to json4: %v", err)
 		}
+		
 		assert.Equal(t, rr.Code, v.statusCode)
 
 		if v.statusCode == 200 {
-			assert.Equal(t, buy.BitcoinAmount, responseMap["bitcoinAmount"])
+			assert.Equal(t, buy.BitcoinAmount, responseMap["bitcoin_amount"])
 			assert.Equal(t, float64(buy.AuthorID), responseMap["author_id"]) //the response author id is float64
 		}
 	}
@@ -238,7 +232,7 @@ func TestUpdateBuy(t *testing.T) {
 		id           	string
 		updateJSON   	string
 		statusCode   	int
-		bitcoinAmount	string
+		bitcoin_amount	string
 		content      	string
 		author_id    	uint32
 		tokenGiven   	string
@@ -247,9 +241,9 @@ func TestUpdateBuy(t *testing.T) {
 		{
 			// Convert int64 to int first before converting to string
 			id:           strconv.Itoa(int(AuthBuyID)),
-			updateJSON:   `{"bitcoinAmount":"The updated buy", "content": "This is the updated content", "author_id": 1}`,
+			updateJSON:   `{"bitcoin_amount":"The updated buy", "content": "This is the updated content", "author_id": 1}`,
 			statusCode:   200,
-			bitcoinAmount:        "The updated buy",
+			bitcoin_amount:        "The updated buy",
 			content:      "This is the updated content",
 			author_id:    AuthBuyAuthorID,
 			tokenGiven:   tokenString,
@@ -258,7 +252,7 @@ func TestUpdateBuy(t *testing.T) {
 		{
 			// When no token is provided
 			id:           strconv.Itoa(int(AuthBuyID)),
-			updateJSON:   `{"bitcoinAmount":"This is still another bitcoinAmount", "content": "This is the updated content", "author_id": 1}`,
+			updateJSON:   `{"bitcoin_amount":"This is still another bitcoin_amount", "content": "This is the updated content", "author_id": 1}`,
 			tokenGiven:   "",
 			statusCode:   401,
 			errorMessage: "Unauthorized",
@@ -266,29 +260,29 @@ func TestUpdateBuy(t *testing.T) {
 		{
 			// When incorrect token is provided
 			id:           strconv.Itoa(int(AuthBuyID)),
-			updateJSON:   `{"bitcoinAmount":"This is still another bitcoinAmount", "author_id": 1}`,
+			updateJSON:   `{"bitcoin_amount":"This is still another bitcoin_amount", "author_id": 1}`,
 			tokenGiven:   "this is an incorrect token",
 			statusCode:   401,
 			errorMessage: "Unauthorized",
 		},
 		{
-			//Note: "Title 2" belongs to buy 2, and bitcoinAmount must be unique
+			//Note: "Title 2" belongs to buy 2, and bitcoin_amount must be unique
 			id:           strconv.Itoa(int(AuthBuyID)),
-			updateJSON:   `{"bitcoinAmount":"Title 2", "author_id": 1}`,
+			updateJSON:   `{"bitcoin_amount":"Title 2", "author_id": 1}`,
 			statusCode:   500,
 			tokenGiven:   tokenString,
 			errorMessage: "Title Already Taken",
 		},
 		{
 			id:           strconv.Itoa(int(AuthBuyID)),
-			updateJSON:   `{"bitcoinAmount":"", "author_id": 1}`,
+			updateJSON:   `{"bitcoin_amount":"", "author_id": 1}`,
 			statusCode:   422,
 			tokenGiven:   tokenString,
 			errorMessage: "Required Bitcoin Amount",
 		},
 		{
 			id:           strconv.Itoa(int(AuthBuyID)),
-			updateJSON:   `{"bitcoinAmount":"This is another bitcoinAmount"}`,
+			updateJSON:   `{"bitcoin_amount":"This is another bitcoin_amount"}`,
 			statusCode:   401,
 			tokenGiven:   tokenString,
 			errorMessage: "Unauthorized",
@@ -299,7 +293,7 @@ func TestUpdateBuy(t *testing.T) {
 		},
 		{
 			id:           strconv.Itoa(int(AuthBuyID)),
-			updateJSON:   `{"bitcoinAmount":"This is still another bitcoinAmount", "author_id": 2}`,
+			updateJSON:   `{"bitcoin_amount":"This is still another bitcoin_amount", "author_id": 2}`,
 			tokenGiven:   tokenString,
 			statusCode:   401,
 			errorMessage: "Unauthorized",
@@ -327,7 +321,7 @@ func TestUpdateBuy(t *testing.T) {
 		}
 		assert.Equal(t, rr.Code, v.statusCode)
 		if v.statusCode == 200 {
-			assert.Equal(t, responseMap["bitcoinAmount"], v.bitcoinAmount)
+			assert.Equal(t, responseMap["bitcoin_amount"], v.bitcoin_amount)
 			assert.Equal(t, responseMap["author_id"], float64(v.author_id)) //just to match the type of the json we receive thats why we used float64
 		}
 		if v.statusCode == 401 || v.statusCode == 422 || v.statusCode == 500 && v.errorMessage != "" {

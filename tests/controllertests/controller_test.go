@@ -150,13 +150,16 @@ func seedOneUserOneBuyAndOneSale() (models.Buy, models.Sale, error) {
 
 	err = server.DB.Model(&models.Buy{}).Create(&buy).Error
 	if err != nil {
+		fmt.Println("ponto1")
 		return models.Buy{}, models.Sale{}, err
 	}
 
 	err = server.DB.Model(&models.Sale{}).Create(&sale).Error
 	if err != nil {
+		fmt.Println("ponto2")
 		return models.Buy{}, models.Sale{}, err
 	}
+	fmt.Println(buy)
 	return buy, sale, nil
 }
 

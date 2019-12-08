@@ -27,7 +27,7 @@ func (p *Buy) Prepare() {
 func (p *Buy) Validate() error {
 
 	if p.BitcoinAmount == "" {
-		return errors.New("Required BitcoinAmount")
+		return errors.New("Required Bitcoin Amount")
 	}
 	if p.AuthorID < 1 {
 		return errors.New("Required Author")

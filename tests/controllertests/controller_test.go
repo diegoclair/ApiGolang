@@ -148,14 +148,14 @@ func seedOneUserOneBuyAndOneSale() (models.Buy, models.Sale, error) {
 		AuthorID: user.ID,
 	}
 
-	errBuy := server.DB.Model(&models.Buy{}).Create(&buy).Error
-	errSale := server.DB.Model(&models.Sale{}).Create(&sale).Error
-
-	if errBuy != nil {
-		return models.Buy{}, models.Sale{}, errBuy
+	err = server.DB.Model(&models.Buy{}).Create(&buy).Error
+	if err != nil {
+		return models.Buy{}, models.Sale{}, err
 	}
-	if errSale != nil {
-		return models.Buy{}, models.Sale{}, errSale
+
+	err = server.DB.Model(&models.Sale{}).Create(&sale).Error
+	if err != nil {
+		return models.Buy{}, models.Sale{}, err
 	}
 	return buy, sale, nil
 }

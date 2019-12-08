@@ -61,7 +61,7 @@ func TestGetSaleByID(t *testing.T) {
 	if err != nil {
 		log.Fatalf("Error refreshing user and sale table: %v\n", err)
 	}
-	sale, _, err := seedOneUserOneBuyAndOneSale()
+	_, sale, err := seedOneUserOneBuyAndOneSale()
 	if err != nil {
 		log.Fatalf("Error Seeding table")
 	}
@@ -80,7 +80,7 @@ func TestUpdateASale(t *testing.T) {
 	if err != nil {
 		log.Fatalf("Error refreshing user and sale table: %v\n", err)
 	}
-	sale, _, err := seedOneUserOneBuyAndOneSale()
+	_, sale, err := seedOneUserOneBuyAndOneSale()
 	if err != nil {
 		log.Fatalf("Error Seeding table")
 	}
@@ -105,7 +105,7 @@ func TestDeleteASale(t *testing.T) {
 	if err != nil {
 		log.Fatalf("Error refreshing user and sale table: %v\n", err)
 	}
-	sale, _, err := seedOneUserOneBuyAndOneSale()
+	_, sale, err := seedOneUserOneBuyAndOneSale()
 	if err != nil {
 		log.Fatalf("Error Seeding tables")
 	}

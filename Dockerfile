@@ -39,4 +39,4 @@ COPY --from=builder /app/.env .
 EXPOSE 8080
 
 #Command to run the executable
-CMD ["./main ; ./api/coinmarketcap/coinmarket"]
+CMD ["./main", "./api/coinmarketcap/coinmarket"]

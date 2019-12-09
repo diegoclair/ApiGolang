@@ -1,13 +1,14 @@
 package coinmarketcap
 
 import (
-  "encoding/json"
-  "fmt"
-  "io/ioutil"
-  "log"
-  "net/http"
-  "net/url"
-  "os"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"net/url"
+	"os"
+	"time"
 )
 
 type Bitcoin struct {
@@ -29,31 +30,58 @@ type Bitcoin struct {
 	} `json:"data"`
 }
 
-func getBitcoinPrice() (float64) {
-  client := &http.Client{}
-  req, err := http.NewRequest("GET","https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest", nil)
-  if err != nil {
-    log.Print(err)
-    os.Exit(1)
-  }
+var bitcoinPrice float64
 
-  q := url.Values{}
-  q.Add("symbol", "BTC")
+//criar func to get price each hour
 
-  req.Header.Set("Accepts", "application/json")
-  req.Header.Add("X-CMC_PRO_API_KEY", "b266000d-ca86-4eb5-9848-6ac6db75a549")
-  req.URL.RawQuery = q.Encode()
+func doEvery(d time.Duration, f func(time.Time)) {
+	for x := range time.Tick(d) {
+		f(x)
+	}
+}
+
+func reloadBiticoinPrice(t time.Time) {
+	bitcoinPrice = bitcoinPriceCoinMarketCap()
+	fmt.Println(bitcoinPrice)
+}
+
+func Run() {
+	doEvery(60*1000*time.Millisecond, reloadBiticoinPrice)
+}
 
 
-  resp, err := client.Do(req);
-  if err != nil {
-    fmt.Println("Error sending request to server")
-    os.Exit(1)
-  }
-  fmt.Println(resp.Status);
-  respBody, _ := ioutil.ReadAll(resp.Body)
+func GetBitcoinPrice() float64 {
+	if bitcoinPrice != 0 {
+		return bitcoinPrice
+	} else {
+		bitcoinPrice = bitcoinPriceCoinMarketCap()
+		return bitcoinPrice
+	}
+}
 
-  bitcoin := Bitcoin{}
-  json.Unmarshal(respBody, &bitcoin)
-  return bitcoin.Data.BTC.Quote.USD.Price
+func bitcoinPriceCoinMarketCap() float64 {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest", nil)
+	if err != nil {
+		log.Print(err)
+		os.Exit(1)
+	}
+
+	q := url.Values{}
+	q.Add("symbol", "BTC")
+
+	req.Header.Set("Accepts", "application/json")
+	req.Header.Add("X-CMC_PRO_API_KEY", "b266000d-ca86-4eb5-9848-6ac6db75a549")
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending request to server")
+		os.Exit(1)
+	}
+	respBody, _ := ioutil.ReadAll(resp.Body)
+
+	bitcoin := Bitcoin{}
+	json.Unmarshal(respBody, &bitcoin)
+	return bitcoin.Data.BTC.Quote.USD.Price
 }

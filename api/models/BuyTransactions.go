@@ -14,6 +14,7 @@ type Buy struct {
 	BitcoinAmount	string    `gorm:"size:255;not null;" json:"bitcoin_amount"`
 	Author			User      `json:"author"`
 	AuthorID		uint32    `gorm:"not null" json:"author_id"`
+	BitcoinPrice    string    `gorm:"size:255;not null;" json:"bitcoin_price"`
 	CreatedAt		time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 

@@ -1,6 +1,7 @@
 package coinmarketcap
 
 import (
+  "encoding/json"
   "fmt"
   "io/ioutil"
   "log"
@@ -9,9 +10,28 @@ import (
   "os"
 )
 
-func main() {
+type Bitcoin struct {
+	Status struct {
+		Timestamp string `json:"timestamp"`
+		ErrorCode int    `json:"error_code"`
+	} `json:"status"`
+	Data struct {
+		BTC struct {
+			ID         int    `json:"id"`
+			Name       string `json:"name"`
+			LastUpdate string `json:"last_update"`
+			Quote      struct {
+				USD struct {
+					Price float64 `json:"price"`
+				} `json:"USD"`
+			} `json:"quote"`
+		} `json:"BTC"`
+	} `json:"data"`
+}
+
+func getBitcoinPrice() (float64) {
   client := &http.Client{}
-  req, err := http.NewRequest("GET","https://pro-api.coinmarketcap.com/v1/cryptocurrency/map", nil)
+  req, err := http.NewRequest("GET","https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest", nil)
   if err != nil {
     log.Print(err)
     os.Exit(1)
@@ -32,6 +52,8 @@ func main() {
   }
   fmt.Println(resp.Status);
   respBody, _ := ioutil.ReadAll(resp.Body)
-  fmt.Println(string(respBody));
 
+  bitcoin := Bitcoin{}
+  json.Unmarshal(respBody, &bitcoin)
+  return bitcoin.Data.BTC.Quote.USD.Price
 }

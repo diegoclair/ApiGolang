@@ -40,15 +40,15 @@ func doEvery(d time.Duration, f func(time.Time)) {
 	}
 }
 
-func reloadBiticoinPrice(t time.Time) {
+func ReloadBiticoinPrice(t time.Time) {
 	bitcoinPrice = bitcoinPriceCoinMarketCap()
 	fmt.Println(bitcoinPrice)
 }
 
 func Run() {
-	doEvery(60*1000*time.Millisecond, reloadBiticoinPrice)
+	fmt.Println("cheguei aqui")
+	doEvery(6*1000*time.Millisecond, ReloadBiticoinPrice)
 }
-
 
 func GetBitcoinPrice() float64 {
 	if bitcoinPrice != 0 {

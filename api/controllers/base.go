@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/diegoclair/ApiGolang/api/models"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 
 	_ "github.com/jinzhu/gorm/dialects/postgres" //postgres database driver
-
-	"github.com/diegoclair/ApiGolang/api/models"
 )
 
 type Server struct {
@@ -40,7 +40,14 @@ func (server *Server) Initialize(Dbdriver, DbUser, DbPassword, DbPort, DbHost, D
 	server.initializeRoutes()
 }
 
+func doEvery(d time.Duration, f func(time.Time)) {
+	for x := range time.Tick(d) {
+		f(x)
+	}
+}
+
 func (server *Server) Run(addr string) {
+	doEvery(6*1000*time.Millisecond, ReloadBiticoinPrice)
 	fmt.Println("Listening to port 8080")
 	log.Fatal(http.ListenAndServe(addr, server.Router))
 }

@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/diegoclair/ApiGolang/api/controllers"
 	"github.com/diegoclair/ApiGolang/api/seed"
+	"github.com/joho/godotenv"
 )
 
 var server = controllers.Server{}

@@ -44,7 +44,7 @@ services:
 
 volumes:
   api:
-  database_postgres:                  # Uncomment this when using postgres.
+  database_postgres:
 
 # Networks to be created to facilitate communication between containers
 networks:

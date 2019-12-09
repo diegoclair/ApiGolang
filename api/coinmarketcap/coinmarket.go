@@ -1,4 +1,4 @@
-package coinmarketcap
+package main
 
 import (
 	"encoding/json"
@@ -45,8 +45,7 @@ func ReloadBiticoinPrice(t time.Time) {
 	fmt.Println(bitcoinPrice)
 }
 
-func Run() {
-	fmt.Println("cheguei aqui")
+func main() {
 	doEvery(6*1000*time.Millisecond, ReloadBiticoinPrice)
 }
 

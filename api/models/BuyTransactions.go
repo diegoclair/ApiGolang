@@ -57,7 +57,7 @@ func (p *Buy) Prepare(db *gorm.DB) {
 				Minute: min,
 			},
 		}
-		hours.UpdateLastHour(db)
+		hours[0].UpdateLastHour(db)
 		fmt.Println(newHour, hr, min)
 	}
 }

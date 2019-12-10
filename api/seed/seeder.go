@@ -3,25 +3,24 @@ package seed
 import (
 	"log"
 
-	"github.com/jinzhu/gorm"
 	"github.com/diegoclair/ApiGolang/api/models"
+	"github.com/jinzhu/gorm"
 )
 
 var users = []models.User{
 	models.User{
-		FullName: "Steven victor",
-		Email:    "steven@gmail.com",
-		Password: 	"password",
-		BirthDate: 	"1991/07/03",
+		FullName:  "Steven victor",
+		Email:     "steven@gmail.com",
+		Password:  "password",
+		BirthDate: "1991/07/03",
 	},
 	models.User{
-		FullName: 	"Martin Luther",
-		Email:    	"luther@gmail.com",
-		Password: 	"123456",
-		BirthDate: 	"1993/10/03",
+		FullName:  "Martin Luther",
+		Email:     "luther@gmail.com",
+		Password:  "123456",
+		BirthDate: "1993/10/03",
 	},
 }
-
 var buys = []models.Buy{
 	models.Buy{
 		BitcoinAmount: "0.125",
@@ -40,13 +39,20 @@ var sales = []models.Sale{
 	},
 }
 
+var hour = []models.LastHour{
+	models.LastHour{
+		Hora:   0,
+		Minuto: 0,
+	},
+}
+
 func Load(db *gorm.DB) {
 
-	err := db.Debug().DropTableIfExists(&models.Buy{}, &models.Sale{}, &models.User{}).Error
+	err := db.Debug().DropTableIfExists(&models.Buy{}, &models.Sale{}, &models.User{}, &models.LastHour{}).Error
 	if err != nil {
 		log.Fatalf("cannot drop table: %v", err.Error())
 	}
-	err = db.Debug().AutoMigrate(&models.User{}, &models.Buy{}, &models.Sale{}).Error
+	err = db.Debug().AutoMigrate(&models.User{}, &models.Buy{}, &models.Sale{}, &models.LastHour{}).Error
 	if err != nil {
 		log.Fatalf("cannot migrate table: %v", err)
 	}
@@ -58,6 +64,11 @@ func Load(db *gorm.DB) {
 	err = db.Debug().Model(&models.Sale{}).AddForeignKey("author_id", "users(id)", "cascade", "cascade").Error
 	if err != nil {
 		log.Fatalf("attaching foreign key error: %v", err)
+	}
+
+	err = db.Debug().Model(&models.LastHour{}).Create(&hour).Error
+	if err != nil {
+		log.Fatalf("cannot seed last hour table: %v", err)
 	}
 
 	for i, _ := range users {

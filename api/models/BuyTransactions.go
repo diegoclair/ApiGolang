@@ -2,25 +2,40 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"html"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/diegoclair/ApiGolang/api/coinmarketcap"
 	"github.com/jinzhu/gorm"
 )
 
 type Buy struct {
-	ID				uint64    `gorm:"primary_key;auto_increment" json:"id"`
-	BitcoinAmount	string    `gorm:"size:255;not null;" json:"bitcoin_amount"`
-	Author			User      `json:"author"`
-	AuthorID		uint32    `gorm:"not null" json:"author_id"`
-	BitcoinPrice    string    `gorm:"size:255;not null;" json:"bitcoin_price"`
-	CreatedAt		time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	ID            uint64    `gorm:"primary_key;auto_increment" json:"id"`
+	BitcoinAmount string    `gorm:"size:255;not null;" json:"bitcoin_amount"`
+	Author        User      `json:"author"`
+	AuthorID      uint32    `gorm:"not null" json:"author_id"`
+	BitcoinPrice  float64   `gorm:"not null;" json:"bitcoin_price"`
+	TotalBitcoin  float64   `gorm:"not null;" json:"total_bitcoin"`
+	CreatedAt     time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
 func (p *Buy) Prepare() {
+
+	hr, min, price, newHour := coinmarketcap.GetBitcoinPrice()
+	if newHour {
+		//save db new time
+		fmt.Println("newHour", hr, min)
+	}
+
+	f, _ := strconv.ParseFloat(p.BitcoinAmount, 64)
+
 	p.ID = 0
 	p.BitcoinAmount = html.EscapeString(strings.TrimSpace(p.BitcoinAmount))
+	p.BitcoinPrice = price
+	p.TotalBitcoin = price * f
 	p.Author = User{}
 	p.CreatedAt = time.Now()
 }

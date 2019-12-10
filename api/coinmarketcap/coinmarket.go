@@ -50,8 +50,7 @@ func reloadBiticoinPrice(t time.Time) {
 func main() {
 	doEvery(1000*time.Millisecond, reloadBiticoinPrice)
 } */
-
-func GetBitcoinPrice() float64 {
+func getCurrentTime() (hr int, mim int) {
 	currentTime := time.Now()
 	timeStampString := currentTime.Format("2006-01-02 15:04:05")
 	layOut := "2006-01-02 15:04:05"
@@ -59,27 +58,31 @@ func GetBitcoinPrice() float64 {
 	if err != nil {
 		fmt.Println(err)
 	}
-
+	
 	hr, min, _ := timeStamp.Clock()
-	fmt.Println("Hour   :", hr)
-	fmt.Println("Min    :", min)
-	old_hr := hr
-	old_min := min
+
+	return hr, min
+}
+
+func GetBitcoinPrice(old_hr int, old_min int) (hr int, min int, price float64, newHour bool) {
+
+	c_hr, c_min := getCurrentTime()
 
 	if bitcoinPrice != 0 {
-		if hr == (old_hr) {
-			if old_min == min {
+		//criar condição para hora = 23
+		if hr == (old_hr) { //+1
+			if old_min <= min {
 				fmt.Println("chamei")
 				bitcoinPrice = bitcoinPriceCoinMarketCap()
-				return bitcoinPrice
+				return c_hr, c_min, bitcoinPrice, true
 			}
 		}
 		fmt.Println("Esse")
-		return bitcoinPrice
+		return c_hr, c_min, bitcoinPrice, false
 	} else {
 		fmt.Println("oap")
 		bitcoinPrice = bitcoinPriceCoinMarketCap()
-		return bitcoinPrice
+		return c_hr, c_min, bitcoinPrice, true
 	}
 }
 

@@ -2,7 +2,6 @@ package seed
 
 import (
 	"log"
-
 	"github.com/diegoclair/ApiGolang/api/models"
 	"github.com/jinzhu/gorm"
 )
@@ -41,8 +40,8 @@ var sales = []models.Sale{
 
 var hour = []models.LastHour{
 	models.LastHour{
-		Hora:   0,
-		Minuto: 0,
+		Hour:   1,
+		Minute: 2,
 	},
 }
 
@@ -66,7 +65,7 @@ func Load(db *gorm.DB) {
 		log.Fatalf("attaching foreign key error: %v", err)
 	}
 
-	err = db.Debug().Model(&models.LastHour{}).Create(&hour).Error
+	err = db.Debug().Model(&models.LastHour{}).Create(&hour[0]).Error
 	if err != nil {
 		log.Fatalf("cannot seed last hour table: %v", err)
 	}

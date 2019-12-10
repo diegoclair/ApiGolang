@@ -1,4 +1,3 @@
-
 package controllers
 
 import (
@@ -9,11 +8,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/mux"
 	"github.com/diegoclair/ApiGolang/api/auth"
 	"github.com/diegoclair/ApiGolang/api/models"
 	"github.com/diegoclair/ApiGolang/api/responses"
 	"github.com/diegoclair/ApiGolang/api/utils/formaterror"
+	"github.com/gorilla/mux"
 )
 
 func (server *Server) CreateBuy(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +28,7 @@ func (server *Server) CreateBuy(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	buy.Prepare()
+	buy.Prepare(server.DB)
 	err = buy.Validate()
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
@@ -138,7 +137,7 @@ func (server *Server) UpdateBuy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	buyUpdate.Prepare()
+	buyUpdate.Prepare(server.DB)
 	err = buyUpdate.Validate()
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"html"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -22,13 +23,23 @@ type Buy struct {
 	CreatedAt     time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
-func (p *Buy) Prepare() {
+func getLastHour(db *gorm.DB) (int, int) {
 
-	hr, min, price, newHour := coinmarketcap.GetBitcoinPrice()
-	if newHour {
-		//save db new time
-		fmt.Println("newHour", hr, min)
-	}
+	hour, _ := FindLastHour(db)
+
+	last_time := reflect.ValueOf(hour[0])
+	fmt.Println("last_time", last_time)
+	l_hr := last_time.Field(0).Interface().(int)
+	l_min := last_time.Field(1).Interface().(int)
+
+	return l_hr, l_min
+}
+
+func (p *Buy) Prepare(db *gorm.DB) {
+
+	l_hr, l_min := getLastHour(db)
+
+	hr, min, price, newHour := coinmarketcap.GetBitcoinPrice(l_hr, l_min)
 
 	f, _ := strconv.ParseFloat(p.BitcoinAmount, 64)
 
@@ -38,6 +49,17 @@ func (p *Buy) Prepare() {
 	p.TotalBitcoin = price * f
 	p.Author = User{}
 	p.CreatedAt = time.Now()
+
+	if newHour {
+		var hours = []LastHour{
+			LastHour{
+				Hour:   hr,
+				Minute: min,
+			},
+		}
+		hours.UpdateLastHour(db)
+		fmt.Println(newHour, hr, min)
+	}
 }
 
 func (p *Buy) Validate() error {

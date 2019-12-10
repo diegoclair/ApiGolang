@@ -34,25 +34,50 @@ var bitcoinPrice float64
 
 //criar func to get price each hour
 
-func doEvery(d time.Duration, f func(time.Time)) {
+/* func doEvery(d time.Duration, f func(time.Time)) {
 	for x := range time.Tick(d) {
 		f(x)
 	}
 }
 
-func ReloadBiticoinPrice(t time.Time) {
+func reloadBiticoinPrice(t time.Time) {
+
 	bitcoinPrice = bitcoinPriceCoinMarketCap()
 	fmt.Println(bitcoinPrice)
+	fmt.Println(time.Now())
 }
 
-func start() {
-	doEvery(6*1000*time.Millisecond, ReloadBiticoinPrice)
-}
+func main() {
+	doEvery(1000*time.Millisecond, reloadBiticoinPrice)
+} */
 
 func GetBitcoinPrice() float64 {
+	currentTime := time.Now()
+	timeStampString := currentTime.Format("2006-01-02 15:04:05")
+	layOut := "2006-01-02 15:04:05"
+	timeStamp, err := time.Parse(layOut, timeStampString)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	hr, min, _ := timeStamp.Clock()
+	fmt.Println("Hour   :", hr)
+	fmt.Println("Min    :", min)
+	old_hr := hr
+	old_min := min
+
 	if bitcoinPrice != 0 {
+		if hr == (old_hr) {
+			if old_min == min {
+				fmt.Println("chamei")
+				bitcoinPrice = bitcoinPriceCoinMarketCap()
+				return bitcoinPrice
+			}
+		}
+		fmt.Println("Esse")
 		return bitcoinPrice
 	} else {
+		fmt.Println("oap")
 		bitcoinPrice = bitcoinPriceCoinMarketCap()
 		return bitcoinPrice
 	}

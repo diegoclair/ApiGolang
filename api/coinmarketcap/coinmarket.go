@@ -69,13 +69,21 @@ func GetBitcoinPrice(old_hr int, old_min int) (hr int, min int, price float64, n
 	c_hr, c_min := getCurrentTime()
 
 	if bitcoinPrice != 0 {
-		fmt.Println("old_hr", old_hr, "old_min", old_min)
-		//criar condição para hora = 23
+		fmt.Println("teste23+1",old_hr + 1)
 		if c_hr == (old_hr + 1) {
 			if old_min <= c_min {
-				fmt.Println("chamei")
 				bitcoinPrice = bitcoinPriceCoinMarketCap()
 				return c_hr, c_min, bitcoinPrice, true
+			}
+		}else {
+			if old_hr == 23 {
+				if c_hr == 00 {
+					if old_min <= c_min {
+						fmt.Println("ponto23")
+						bitcoinPrice = bitcoinPriceCoinMarketCap()
+						return c_hr, c_min, bitcoinPrice, true
+					}
+				}
 			}
 		}
 		fmt.Println("Esse")

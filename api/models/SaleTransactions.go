@@ -2,55 +2,79 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"html"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/diegoclair/ApiGolang/api/coinmarketcap"
 	"github.com/jinzhu/gorm"
 )
 
 type Sale struct {
-	ID				uint64    `gorm:"primary_key;auto_increment" json:"id"`
-	BitcoinAmount	string    `gorm:"size:255;not null;" json:"bitcoin_amount"`
-	Author			User      `json:"author"`
-	AuthorID		uint32    `gorm:"not null" json:"author_id"`
-	CreatedAt		time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	ID            uint64    `gorm:"primary_key;auto_increment" json:"id"`
+	BitcoinAmount string    `gorm:"size:255;not null;" json:"bitcoin_amount"`
+	Author        User      `json:"author"`
+	AuthorID      uint32    `gorm:"not null" json:"author_id"`
+	BitcoinPrice  float64   `gorm:"not null;" json:"bitcoin_price"`
+	TotalBitcoin  float64   `gorm:"not null;" json:"total_bitcoin"`
+	CreatedAt     time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
-func (p *Sale) Prepare() {
-	p.ID = 0
-	p.BitcoinAmount = html.EscapeString(strings.TrimSpace(p.BitcoinAmount))
-	p.Author = User{}
-	p.CreatedAt = time.Now()
+func (s *Sale) Prepare(db *gorm.DB) {
+	l_hr, l_min := getLastHour(db)
+
+	hr, min, price, newHour := coinmarketcap.GetBitcoinPrice(l_hr, l_min)
+
+	f, _ := strconv.ParseFloat(s.BitcoinAmount, 64)
+
+	s.ID = 0
+	s.BitcoinAmount = html.EscapeString(strings.TrimSpace(s.BitcoinAmount))
+	s.BitcoinPrice = price
+	s.TotalBitcoin = price * f
+	s.Author = User{}
+	s.CreatedAt = time.Now()
+
+	fmt.Println(newHour, hr, min)
+	if newHour {
+		var hours = []LastHour{
+			LastHour{
+				Hour:   hr,
+				Minute: min,
+			},
+		}
+		hours[0].UpdateLastHour(db)
+	}
 }
 
-func (p *Sale) Validate() error {
+func (s *Sale) Validate() error {
 
-	if p.BitcoinAmount == "" {
+	if s.BitcoinAmount == "" {
 		return errors.New("Required BitcoinAmount")
 	}
-	if p.AuthorID < 1 {
+	if s.AuthorID < 1 {
 		return errors.New("Required Author")
 	}
 	return nil
 }
 
-func (p *Sale) SaveSale(db *gorm.DB) (*Sale, error) {
+func (s *Sale) SaveSale(db *gorm.DB) (*Sale, error) {
 	var err error
-	err = db.Debug().Model(&Sale{}).Create(&p).Error
+	err = db.Debug().Model(&Sale{}).Create(&s).Error
 	if err != nil {
 		return &Sale{}, err
 	}
-	if p.ID != 0 {
-		err = db.Debug().Model(&User{}).Where("id = ?", p.AuthorID).Take(&p.Author).Error
+	if s.ID != 0 {
+		err = db.Debug().Model(&User{}).Where("id = ?", s.AuthorID).Take(&s.Author).Error
 		if err != nil {
 			return &Sale{}, err
 		}
 	}
-	return p, nil
+	return s, nil
 }
 
-func (p *Sale) FindAllSales(db *gorm.DB) (*[]Sale, error) {
+func (s *Sale) FindAllSales(db *gorm.DB) (*[]Sale, error) {
 	var err error
 	sales := []Sale{}
 	err = db.Debug().Model(&Sale{}).Limit(100).Find(&sales).Error
@@ -68,39 +92,39 @@ func (p *Sale) FindAllSales(db *gorm.DB) (*[]Sale, error) {
 	return &sales, nil
 }
 
-func (p *Sale) FindSaleByID(db *gorm.DB, pid uint64) (*Sale, error) {
+func (s *Sale) FindSaleByID(db *gorm.DB, pid uint64) (*Sale, error) {
 	var err error
-	err = db.Debug().Model(&Sale{}).Where("id = ?", pid).Take(&p).Error
+	err = db.Debug().Model(&Sale{}).Where("id = ?", pid).Take(&s).Error
 	if err != nil {
 		return &Sale{}, err
 	}
-	if p.ID != 0 {
-		err = db.Debug().Model(&User{}).Where("id = ?", p.AuthorID).Take(&p.Author).Error
+	if s.ID != 0 {
+		err = db.Debug().Model(&User{}).Where("id = ?", s.AuthorID).Take(&s.Author).Error
 		if err != nil {
 			return &Sale{}, err
 		}
 	}
-	return p, nil
+	return s, nil
 }
 
-func (p *Sale) UpdateASale(db *gorm.DB) (*Sale, error) {
+func (s *Sale) UpdateASale(db *gorm.DB) (*Sale, error) {
 
 	var err error
 
-	err = db.Debug().Model(&Sale{}).Where("id = ?", p.ID).Updates(Sale{BitcoinAmount: p.BitcoinAmount}).Error
+	err = db.Debug().Model(&Sale{}).Where("id = ?", s.ID).Updates(Sale{BitcoinAmount: s.BitcoinAmount}).Error
 	if err != nil {
 		return &Sale{}, err
 	}
-	if p.ID != 0 {
-		err = db.Debug().Model(&User{}).Where("id = ?", p.AuthorID).Take(&p.Author).Error
+	if s.ID != 0 {
+		err = db.Debug().Model(&User{}).Where("id = ?", s.AuthorID).Take(&s.Author).Error
 		if err != nil {
 			return &Sale{}, err
 		}
 	}
-	return p, nil
+	return s, nil
 }
 
-func (p *Sale) DeleteASale(db *gorm.DB, pid uint64, uid uint32) (int64, error) {
+func (s *Sale) DeleteASale(db *gorm.DB, pid uint64, uid uint32) (int64, error) {
 
 	db = db.Debug().Model(&Sale{}).Where("id = ? and author_id = ?", pid, uid).Take(&Sale{}).Delete(&Sale{})
 

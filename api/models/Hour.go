@@ -16,12 +16,12 @@ func getLastHour(db *gorm.DB) (int, int) {
 
 	hour, _ := FindLastHour(db)
 
-	last_time := reflect.ValueOf(hour[0])
-	fmt.Println("last_time", last_time)
-	l_hr := last_time.Field(0).Interface().(int)
-	l_min := last_time.Field(1).Interface().(int)
+	lastTime := reflect.ValueOf(hour[0])
+	fmt.Println("last_time", lastTime)
+	lastHr := lastTime.Field(0).Interface().(int)
+	lastMin := lastTime.Field(1).Interface().(int)
 
-	return l_hr, l_min
+	return lastHr, lastMin
 }
 
 func FindLastHour(db *gorm.DB) ([]LastHour, error) {

@@ -24,9 +24,9 @@ type Buy struct {
 
 func (b *Buy) Prepare(db *gorm.DB) {
 
-	l_hr, l_min := getLastHour(db)
+	lastHr, lastMin := getLastHour(db)
 
-	hr, min, price, newHour := coinmarketcap.GetBitcoinPrice(l_hr, l_min)
+	hr, min, price, newHour := coinmarketcap.GetBitcoinPrice(lastHr, lastMin)
 
 	f, _ := strconv.ParseFloat(b.BitcoinAmount, 64)
 
@@ -75,7 +75,7 @@ func (b *Buy) SaveBuy(db *gorm.DB) (*Buy, error) {
 	return b, nil
 }
 
-func (p *Buy) FindAllBuys(db *gorm.DB) (*[]Buy, error) {
+func (b *Buy) FindAllBuys(db *gorm.DB) (*[]Buy, error) {
 	var err error
 	buys := []Buy{}
 	err = db.Debug().Model(&Buy{}).Limit(100).Find(&buys).Error
@@ -83,7 +83,7 @@ func (p *Buy) FindAllBuys(db *gorm.DB) (*[]Buy, error) {
 		return &[]Buy{}, err
 	}
 	if len(buys) > 0 {
-		for i, _ := range buys {
+		for i := range buys {
 			err := db.Debug().Model(&User{}).Where("id = ?", buys[i].AuthorID).Take(&buys[i].Author).Error
 			if err != nil {
 				return &[]Buy{}, err

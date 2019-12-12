@@ -23,9 +23,9 @@ type Sale struct {
 }
 
 func (s *Sale) Prepare(db *gorm.DB) {
-	l_hr, l_min := getLastHour(db)
+	lastHr, lastMin := getLastHour(db)
 
-	hr, min, price, newHour := coinmarketcap.GetBitcoinPrice(l_hr, l_min)
+	hr, min, price, newHour := coinmarketcap.GetBitcoinPrice(lastHr, lastMin)
 
 	f, _ := strconv.ParseFloat(s.BitcoinAmount, 64)
 
@@ -34,7 +34,7 @@ func (s *Sale) Prepare(db *gorm.DB) {
 	s.BitcoinPrice = price
 	s.TotalBitcoin = price * f
 	s.Author = User{}
-	s.CreatedAt = time.Now()
+	s.CreatedAt = time.Date(2019, 12, 10, 10, 07, 8, 7, time.UTC)
 
 	fmt.Println(newHour, hr, min)
 	if newHour {
@@ -82,7 +82,7 @@ func (s *Sale) FindAllSales(db *gorm.DB) (*[]Sale, error) {
 		return &[]Sale{}, err
 	}
 	if len(sales) > 0 {
-		for i, _ := range sales {
+		for i := range sales {
 			err := db.Debug().Model(&User{}).Where("id = ?", sales[i].AuthorID).Take(&sales[i].Author).Error
 			if err != nil {
 				return &[]Sale{}, err

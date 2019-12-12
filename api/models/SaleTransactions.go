@@ -34,7 +34,7 @@ func (s *Sale) Prepare(db *gorm.DB) {
 	s.BitcoinPrice = price
 	s.TotalBitcoin = price * f
 	s.Author = User{}
-	s.CreatedAt = time.Date(2019, 12, 10, 10, 07, 8, 7, time.UTC)
+	s.CreatedAt = time.Now()
 
 	fmt.Println(newHour, hr, min)
 	if newHour {

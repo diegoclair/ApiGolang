@@ -32,24 +32,7 @@ type Bitcoin struct {
 
 var bitcoinPrice float64
 
-//criar func to get price each hour
 
-/* func doEvery(d time.Duration, f func(time.Time)) {
-	for x := range time.Tick(d) {
-		f(x)
-	}
-}
-
-func reloadBiticoinPrice(t time.Time) {
-
-	bitcoinPrice = bitcoinPriceCoinMarketCap()
-	fmt.Println(bitcoinPrice)
-	fmt.Println(time.Now())
-}
-
-func main() {
-	doEvery(1000*time.Millisecond, reloadBiticoinPrice)
-} */
 func getCurrentTime() (hr int, mim int) {
 	currentTime := time.Now()
 	timeStampString := currentTime.Format("2006-01-02 15:04:05")
@@ -69,7 +52,7 @@ func GetBitcoinPrice(old_hr int, old_min int) (hr int, min int, price float64, n
 	c_hr, c_min := getCurrentTime()
 
 	if bitcoinPrice != 0 {
-		if c_hr == 0 {
+		if c_hr == 0 && c_hr != old_hr {
 			bitcoinPrice = bitcoinPriceCoinMarketCap()
 			return c_hr, c_min, bitcoinPrice, true
 		}else{

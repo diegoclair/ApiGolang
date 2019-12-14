@@ -29,7 +29,7 @@ Send a "POST" Json to http://localhost:8080/login, as the following example:<br>
 Then you'll get the token, something like that: <br>
 <b>eyJhbGclOiJIUsI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3HpemVkIjp0cnVlLCJ1c2VyX2lkIjozfQ.PBHX7OM9yzJaiYWYoRoXWChDYp-5zL38jxaDnDLudLs</b>
 <br><br>
-## 3 - Put the header auhotization:
+## 3 - Put the header authorization:
 Now you need to put the header authorization with Type Bearer Token, then put the token that you got in the step 2.
 <br>
 

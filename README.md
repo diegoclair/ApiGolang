@@ -33,7 +33,7 @@ Then you'll get the token, something like that: <br>
 Now you need to put the header authorization with Type Bearer Token, then put the token that you got in the step 2.
 <br>
 
-## 4 - User the following urls to use full API:
+## 4 - Use the following urls to use full API:
 ### GET:
 http://localhost:8080/users<br>
 http://localhost:8080/buys<br>

@@ -33,5 +33,5 @@ func (s *Server) initializeRoutes() {
 
 	//Reports
 	s.Router.HandleFunc("/reports/id/{id}", middlewares.SetMiddlewareAuthentication(s.GetReportsByUserId)).Methods("GET")
-	s.Router.HandleFunc("/reports/day/{date}", middlewares.SetMiddlewareAuthentication(s.GetReportsByDate)).Methods("GET")
+	s.Router.HandleFunc("/reports/date/{date}", middlewares.SetMiddlewareAuthentication(s.GetReportsByDate)).Methods("GET")
 }

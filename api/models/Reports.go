@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/jinzhu/gorm"
 )
 
@@ -53,7 +51,7 @@ func (r *Reports) FindReportsByUserID(db *gorm.DB, uid uint32) (*Reports, error)
 }
 
 func (r *Reports) FindReportsByDate(db *gorm.DB, date string) (*Reports, error) {
-	fmt.Println(date)
+
 	//========================================= BUYS ==============================================
 	buys := []Buy{}
 	var err error

@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/jinzhu/gorm"
@@ -17,7 +16,6 @@ func getLastHour(db *gorm.DB) (int, int) {
 	hour, _ := FindLastHour(db)
 
 	lastTime := reflect.ValueOf(hour[0])
-	fmt.Println("last_time", lastTime)
 	lastHr := lastTime.Field(0).Interface().(int)
 	lastMin := lastTime.Field(1).Interface().(int)
 

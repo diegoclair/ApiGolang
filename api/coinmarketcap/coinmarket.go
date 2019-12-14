@@ -47,27 +47,26 @@ func getCurrentTime() (hr int, mim int) {
 	return hr, min
 }
 
-func GetBitcoinPrice(old_hr int, old_min int) (hr int, min int, price float64, newHour bool) {
+func GetBitcoinPrice(oldHr int, oldMin int) (hr int, min int, price float64, newHour bool) {
 
-	c_hr, c_min := getCurrentTime()
+	cHr, cMin := getCurrentTime()
 
 	if bitcoinPrice != 0 {
-		if c_hr == 0 && c_hr != old_hr {
+		if cHr == 0 && cHr != oldHr {
 			bitcoinPrice = bitcoinPriceCoinMarketCap()
-			return c_hr, c_min, bitcoinPrice, true
-		}else{
-			if c_hr >= (old_hr + 1) {
-				if old_min <= c_min {
-					bitcoinPrice = bitcoinPriceCoinMarketCap()
-					return c_hr, c_min, bitcoinPrice, true
-				}
-			}
-			return c_hr, c_min, bitcoinPrice, false
+			return cHr, cMin, bitcoinPrice, true
 		}
+		if cHr >= (oldHr + 1) {
+			if oldMin <= cMin {
+				bitcoinPrice = bitcoinPriceCoinMarketCap()
+				return cHr, cMin, bitcoinPrice, true
+			}
+		}
+		return cHr, cMin, bitcoinPrice, false
 		
 	} else {
 		bitcoinPrice = bitcoinPriceCoinMarketCap()
-		return c_hr, c_min, bitcoinPrice, true
+		return cHr, cMin, bitcoinPrice, true
 	}
 }
 

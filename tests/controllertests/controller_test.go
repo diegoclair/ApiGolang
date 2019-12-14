@@ -101,7 +101,7 @@ func seedUsers() ([]models.User, error) {
 			BirthDate: 	"1993/10/03",
 		},
 	}
-	for i, _ := range users {
+	for i := range users {
 		err := server.DB.Model(&models.User{}).Create(&users[i]).Error
 		if err != nil {
 			return []models.User{}, err
@@ -150,16 +150,13 @@ func seedOneUserOneBuyAndOneSale() (models.Buy, models.Sale, error) {
 
 	err = server.DB.Model(&models.Buy{}).Create(&buy).Error
 	if err != nil {
-		fmt.Println("ponto1")
 		return models.Buy{}, models.Sale{}, err
 	}
 
 	err = server.DB.Model(&models.Sale{}).Create(&sale).Error
 	if err != nil {
-		fmt.Println("ponto2")
 		return models.Buy{}, models.Sale{}, err
 	}
-	fmt.Println(buy)
 	return buy, sale, nil
 }
 
@@ -201,7 +198,7 @@ func seedUsersBuysAndSales() ([]models.User, []models.Buy, []models.Sale, error)
 		},
 	}
 
-	for i, _ := range users {
+	for i := range users {
 		err = server.DB.Model(&models.User{}).Create(&users[i]).Error
 		if err != nil {
 			log.Fatalf("cannot seed users table: %v", err)

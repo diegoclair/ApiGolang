@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"fmt"
 	"html"
 	"strconv"
 	"strings"
@@ -37,7 +36,6 @@ func (b *Buy) Prepare(db *gorm.DB) {
 	b.Author = User{}
 	b.CreatedAt = time.Now()
 
-	fmt.Println(newHour, hr, min)
 	if newHour {
 		var hours = []LastHour{
 			LastHour{
@@ -49,6 +47,7 @@ func (b *Buy) Prepare(db *gorm.DB) {
 	}
 }
 
+//Validate Bitcoin Fields
 func (b *Buy) Validate() error {
 
 	if b.BitcoinAmount == "" {

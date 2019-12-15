@@ -2,39 +2,46 @@ package seed
 
 import (
 	"log"
+
+	"github.com/diegoclair/ApiGolang/api/coinmarketcap"
 	"github.com/diegoclair/ApiGolang/api/models"
 	"github.com/jinzhu/gorm"
 )
 
 var users = []models.User{
 	models.User{
-		FullName:  "Steven victor",
-		Email:     "steven@gmail.com",
-		Password:  "password",
-		BirthDate: "1991/07/03",
+		FullName:           "Steven victor",
+		Email:              "steven@gmail.com",
+		Password:           "password",
+		BirthDate:          "1991/07/03",
+		Balance:            5000,
+		TotalBitcoinAmount: 200,
 	},
 	models.User{
-		FullName:  "Martin Luther",
-		Email:     "luther@gmail.com",
-		Password:  "123456",
-		BirthDate: "1993/10/03",
+		FullName:           "Martin Luther",
+		Email:              "luther@gmail.com",
+		Password:           "123456",
+		BirthDate:          "1993/10/03",
+		Balance:            5000,
+		TotalBitcoinAmount: 300,
 	},
 }
+
 var buys = []models.Buy{
 	models.Buy{
-		BitcoinAmount: "0.125",
+		BitcoinAmount: 0.125,
 	},
 	models.Buy{
-		BitcoinAmount: "2.025",
+		BitcoinAmount: 2.025,
 	},
 }
 
 var sales = []models.Sale{
 	models.Sale{
-		BitcoinAmount: "0.59",
+		BitcoinAmount: 0.59,
 	},
 	models.Sale{
-		BitcoinAmount: "0.005447",
+		BitcoinAmount: 0.005447,
 	},
 }
 
@@ -70,13 +77,23 @@ func Load(db *gorm.DB) {
 		log.Fatalf("cannot seed last hour table: %v", err)
 	}
 
-	for i, _ := range users {
+	for i := range users {
 		err = db.Debug().Model(&models.User{}).Create(&users[i]).Error
 		if err != nil {
 			log.Fatalf("cannot seed users table: %v", err)
 		}
+
+		lastHr, lastMin := models.GetLastHour(db)
+		_, _, price, _ := coinmarketcap.GetBitcoinPrice(lastHr, lastMin)
+		fb := buys[i].BitcoinAmount
+		fs := sales[i].BitcoinAmount
+
 		buys[i].AuthorID = users[i].ID
+		buys[i].BitcoinPrice = price
+		buys[i].TotalBitcoinPrice = price * fb
 		sales[i].AuthorID = users[i].ID
+		sales[i].BitcoinPrice = price
+		sales[i].TotalBitcoinPrice = price * fs
 
 		err = db.Debug().Model(&models.Buy{}).Create(&buys[i]).Error
 		if err != nil {

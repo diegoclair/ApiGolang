@@ -29,7 +29,7 @@ func (server *Server) CreateSale(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sale.Prepare(server.DB)
-	err = sale.Validate()
+	err = sale.Validate(server.DB)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
@@ -136,7 +136,7 @@ func (server *Server) UpdateSale(w http.ResponseWriter, r *http.Request) {
 	}
 
 	saleUpdate.Prepare(server.DB)
-	err = saleUpdate.Validate()
+	err = saleUpdate.Validate(server.DB)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return

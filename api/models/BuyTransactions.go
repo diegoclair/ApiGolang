@@ -2,9 +2,7 @@ package models
 
 import (
 	"errors"
-	"html"
-	"strconv"
-	"strings"
+	"fmt"
 	"time"
 
 	"github.com/diegoclair/ApiGolang/api/coinmarketcap"
@@ -12,27 +10,27 @@ import (
 )
 
 type Buy struct {
-	ID            uint64    `gorm:"primary_key;auto_increment" json:"id"`
-	BitcoinAmount string    `gorm:"size:255;not null;" json:"bitcoin_amount"`
-	Author        User      `json:"author"`
-	AuthorID      uint32    `gorm:"not null" json:"author_id"`
-	BitcoinPrice  float64   `gorm:"not null;" json:"bitcoin_price"`
-	TotalBitcoin  float64   `gorm:"not null;" json:"total_bitcoin"`
-	CreatedAt     time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	ID                uint64    `gorm:"primary_key;auto_increment" json:"id"`
+	BitcoinAmount     float64   `gorm:"not null;" json:"bitcoin_amount"`
+	Author            User      `json:"author"`
+	AuthorID          uint32    `gorm:"not null" json:"author_id"`
+	BitcoinPrice      float64   `gorm:"not null;" json:"bitcoin_price"`
+	TotalBitcoinPrice float64   `gorm:"not null;" json:"total_bitcoin_price"`
+	CreatedAt         time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
 func (b *Buy) Prepare(db *gorm.DB) {
 
-	lastHr, lastMin := getLastHour(db)
+	lastHr, lastMin := GetLastHour(db)
 
 	hr, min, price, newHour := coinmarketcap.GetBitcoinPrice(lastHr, lastMin)
 
-	f, _ := strconv.ParseFloat(b.BitcoinAmount, 64)
+	f := b.BitcoinAmount
 
 	b.ID = 0
-	b.BitcoinAmount = html.EscapeString(strings.TrimSpace(b.BitcoinAmount))
+	b.BitcoinAmount = b.BitcoinAmount
 	b.BitcoinPrice = price
-	b.TotalBitcoin = price * f
+	b.TotalBitcoinPrice = price * f
 	b.Author = User{}
 	b.CreatedAt = time.Now()
 
@@ -48,23 +46,58 @@ func (b *Buy) Prepare(db *gorm.DB) {
 }
 
 //Validate Bitcoin Fields
-func (b *Buy) Validate() error {
+func (b *Buy) Validate(db *gorm.DB) error {
 
-	if b.BitcoinAmount == "" {
+	if b.BitcoinAmount == 0 {
 		return errors.New("Required Bitcoin Amount")
 	}
 	if b.AuthorID < 1 {
 		return errors.New("Required Author")
+	}
+
+	var err error
+	var user = User{}
+
+	err = db.Debug().Model(&User{}).Where("id = ?", b.AuthorID).Take(&user).Error
+	if err != nil {
+		return errors.New(`Error to get user in Validade BuyTransactions`)
+	}
+	if user.Balance < b.TotalBitcoinPrice {
+		var str = "Insufficient funds. Your current balance is: " + fmt.Sprintf("%f", user.Balance) + " Your current Buy price is " + fmt.Sprintf("%f", b.TotalBitcoinPrice)
+		return errors.New(str)
 	}
 	return nil
 }
 
 func (b *Buy) SaveBuy(db *gorm.DB) (*Buy, error) {
 	var err error
+	//to create buy
 	err = db.Debug().Model(&Buy{}).Create(&b).Error
 	if err != nil {
 		return &Buy{}, err
 	}
+
+	//to update user bitcoinAmount and balance
+	var user = User{}
+	err = db.Debug().Model(&User{}).Where("id = ?", b.AuthorID).Take(&user).Error
+	if err != nil {
+		return b, errors.New("Error to get user, func SaveBuy, file SaleTransactions")
+	}
+
+	db = db.Debug().Model(&User{}).Where("id = ?", b.AuthorID).Take(&User{}).UpdateColumns(
+		map[string]interface{}{
+			"balance":              user.Balance - b.TotalBitcoinPrice,
+			"total_bitcoin_amount": user.TotalBitcoinAmount + b.BitcoinAmount,
+		},
+	)
+	if db.Error != nil {
+		if gorm.IsRecordNotFoundError(db.Error) {
+			return b, errors.New("User not found")
+		}
+		return b, db.Error
+	}
+
+	//to get user data to return in the buy
 	if b.ID != 0 {
 		err = db.Debug().Model(&User{}).Where("id = ?", b.AuthorID).Take(&b.Author).Error
 		if err != nil {

@@ -11,7 +11,7 @@ type LastHour struct {
 	Minute int `gorm:"not null;" json:"minute"`
 }
 
-func getLastHour(db *gorm.DB) (int, int) {
+func GetLastHour(db *gorm.DB) (int, int) {
 
 	hour, _ := FindLastHour(db)
 

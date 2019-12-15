@@ -29,7 +29,7 @@ func (server *Server) CreateBuy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	buy.Prepare(server.DB)
-	err = buy.Validate()
+	err = buy.Validate(server.DB)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
@@ -138,7 +138,7 @@ func (server *Server) UpdateBuy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	buyUpdate.Prepare(server.DB)
-	err = buyUpdate.Validate()
+	err = buyUpdate.Validate(server.DB)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return

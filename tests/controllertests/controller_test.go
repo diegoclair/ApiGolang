@@ -6,10 +6,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/jinzhu/gorm"
-	"github.com/joho/godotenv"
 	"github.com/diegoclair/ApiGolang/api/controllers"
 	"github.com/diegoclair/ApiGolang/api/models"
+	"github.com/jinzhu/gorm"
+	"github.com/joho/godotenv"
 )
 
 var server = controllers.Server{}
@@ -68,10 +68,12 @@ func seedOneUser() (models.User, error) {
 	}
 
 	user := models.User{
-		FullName: "Pet",
-		Email:    "pet@gmail.com",
-		Password: "password",
-		BirthDate: 	"1984/11/14",
+		FullName:           "Pet",
+		Email:              "pet@gmail.com",
+		Password:           "password",
+		BirthDate:          "1984/11/14",
+		Balance:            7000,
+		TotalBitcoinAmount: 140,
 	}
 
 	err = server.DB.Model(&models.User{}).Create(&user).Error
@@ -89,16 +91,20 @@ func seedUsers() ([]models.User, error) {
 	}
 	users := []models.User{
 		models.User{
-			FullName: "Steven victor",
-			Email:    "steven@gmail.com",
-			Password: "password",
-			BirthDate: 	"1991/07/19",
+			FullName:           "Steven victor",
+			Email:              "steven@gmail.com",
+			Password:           "password",
+			BirthDate:          "1991/07/19",
+			Balance:            6000,
+			TotalBitcoinAmount: 120,
 		},
 		models.User{
-			FullName: "Kenny Morris",
-			Email:    "kenny@gmail.com",
-			Password: "password",
-			BirthDate: 	"1993/10/03",
+			FullName:           "Kenny Morris",
+			Email:              "kenny@gmail.com",
+			Password:           "password",
+			BirthDate:          "1993/10/03",
+			Balance:            8000,
+			TotalBitcoinAmount: 180,
 		},
 	}
 	for i := range users {
@@ -140,12 +146,12 @@ func seedOneUserOneBuyAndOneSale() (models.Buy, models.Sale, error) {
 		return models.Buy{}, models.Sale{}, err
 	}
 	buy := models.Buy{
-		BitcoinAmount:    "1.00",
-		AuthorID: user.ID,
+		BitcoinAmount: 1.00,
+		AuthorID:      user.ID,
 	}
 	sale := models.Sale{
-		BitcoinAmount:    "0.059",
-		AuthorID: user.ID,
+		BitcoinAmount: 0.059,
+		AuthorID:      user.ID,
 	}
 
 	err = server.DB.Model(&models.Buy{}).Create(&buy).Error
@@ -169,32 +175,36 @@ func seedUsersBuysAndSales() ([]models.User, []models.Buy, []models.Sale, error)
 	}
 	var users = []models.User{
 		models.User{
-			FullName: "Steven victor",
-			Email:    "steven@gmail.com",
-			Password: "password",
-			BirthDate: 	"1998/04/20",
+			FullName:           "Steven victor",
+			Email:              "steven@gmail.com",
+			Password:           "password",
+			BirthDate:          "1998/04/20",
+			Balance:            5000,
+			TotalBitcoinAmount: 150,
 		},
 		models.User{
-			FullName: "Magu Frank",
-			Email:    "magu@gmail.com",
-			Password: "password",
-			BirthDate: 	"1979/11/13",
+			FullName:           "Magu Frank",
+			Email:              "magu@gmail.com",
+			Password:           "password",
+			BirthDate:          "1979/11/13",
+			Balance:            3000,
+			TotalBitcoinAmount: 100,
 		},
 	}
 	var buys = []models.Buy{
 		models.Buy{
-			BitcoinAmount: "0.025",
+			BitcoinAmount: 0.025,
 		},
 		models.Buy{
-			BitcoinAmount: "0.0012",
+			BitcoinAmount: 0.0012,
 		},
 	}
 	var sales = []models.Sale{
 		models.Sale{
-			BitcoinAmount: "0.00547",
+			BitcoinAmount: 0.00547,
 		},
 		models.Sale{
-			BitcoinAmount: "0.3321",
+			BitcoinAmount: 0.3321,
 		},
 	}
 

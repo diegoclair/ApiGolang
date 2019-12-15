@@ -13,12 +13,14 @@ import (
 )
 
 type User struct {
-	ID			uint32		`gorm:"primary_key;auto_increment" json:"id"`
-	FullName	string		`gorm:"size:255;not null;" json:"fullname"`
-	Email		string		`gorm:"size:100;not null;unique" json:"email"`
-	Password	string		`gorm:"size:100;not null;" json:"password"`
-	BirthDate	string		`json:"birthdate"`
-	CreatedAt 	time.Time 	`gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
+	ID                 uint32    `gorm:"primary_key;auto_increment" json:"id"`
+	FullName           string    `gorm:"size:255;not null;" json:"fullname"`
+	Email              string    `gorm:"size:100;not null;unique" json:"email"`
+	Password           string    `gorm:"size:100;not null;" json:"password"`
+	BirthDate          string    `json:"birthdate"`
+	Balance            float64   `gorm:"not null;" json:"balance"`
+	TotalBitcoinAmount float64   `gorm:"not null;" json:"total_bitcoin_amount"`
+	CreatedAt          time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
 func Hash(password string) ([]byte, error) {
@@ -43,6 +45,7 @@ func (u *User) Prepare() {
 	u.FullName = html.EscapeString(strings.TrimSpace(u.FullName))
 	u.Email = html.EscapeString(strings.TrimSpace(u.Email))
 	u.BirthDate = html.EscapeString(strings.TrimSpace(u.BirthDate))
+	u.Balance = 0
 	u.CreatedAt = time.Now()
 }
 
@@ -142,7 +145,7 @@ func (u *User) UpdateAUser(db *gorm.DB, uid uint32) (*User, error) {
 			"password":  u.Password,
 			"fullname":  u.FullName,
 			"email":     u.Email,
-			"birthdate":  u.BirthDate,
+			"birthdate": u.BirthDate,
 		},
 	)
 	if db.Error != nil {

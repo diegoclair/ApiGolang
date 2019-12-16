@@ -29,9 +29,14 @@ func (server *Server) CreateSale(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sale.Prepare(server.DB)
-	err = sale.Validate(server.DB)
+	err = sale.Validate()
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	err = sale.ValidateAmount(server.DB)
+	if err != nil {
+		responses.ERROR(w, http.StatusAccepted, err)
 		return
 	}
 	uid, err := auth.ExtractTokenID(r)
@@ -136,7 +141,7 @@ func (server *Server) UpdateSale(w http.ResponseWriter, r *http.Request) {
 	}
 
 	saleUpdate.Prepare(server.DB)
-	err = saleUpdate.Validate(server.DB)
+	err = saleUpdate.Validate()
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return

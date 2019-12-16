@@ -21,14 +21,14 @@ func (s *Server) initializeRoutes() {
 	s.Router.HandleFunc("/buys", middlewares.SetMiddlewareJSON(s.CreateBuy)).Methods("POST")
 	s.Router.HandleFunc("/buys", middlewares.SetMiddlewareAuthentication(s.GetBuys)).Methods("GET")
 	s.Router.HandleFunc("/buys/{id}", middlewares.SetMiddlewareAuthentication(s.GetBuy)).Methods("GET")
-	s.Router.HandleFunc("/buys/{id}", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(s.UpdateBuy))).Methods("PUT")
+	//s.Router.HandleFunc("/buys/{id}", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(s.UpdateBuy))).Methods("PUT")
 	//s.Router.HandleFunc("/buys/{id}", middlewares.SetMiddlewareAuthentication(s.DeleteBuy)).Methods("DELETE")
 
 	//Sales routes
 	s.Router.HandleFunc("/sales", middlewares.SetMiddlewareJSON(s.CreateSale)).Methods("POST")
 	s.Router.HandleFunc("/sales", middlewares.SetMiddlewareAuthentication(s.GetSales)).Methods("GET")
 	s.Router.HandleFunc("/sales/{id}", middlewares.SetMiddlewareAuthentication(s.GetSale)).Methods("GET")
-	s.Router.HandleFunc("/sales/{id}", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(s.UpdateSale))).Methods("PUT")
+	//s.Router.HandleFunc("/sales/{id}", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(s.UpdateSale))).Methods("PUT")
 	//s.Router.HandleFunc("/sales/{id}", middlewares.SetMiddlewareAuthentication(s.DeleteSale)).Methods("DELETE")
 
 	//Reports

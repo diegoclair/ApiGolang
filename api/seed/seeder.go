@@ -47,7 +47,7 @@ var sales = []models.Sale{
 
 var hour = []models.LastHour{
 	models.LastHour{
-		Hour:   1,
+		Hour:   0,
 		Minute: 2,
 	},
 }

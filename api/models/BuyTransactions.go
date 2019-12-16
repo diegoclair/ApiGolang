@@ -46,7 +46,7 @@ func (b *Buy) Prepare(db *gorm.DB) {
 }
 
 //Validate Bitcoin Fields
-func (b *Buy) Validate(db *gorm.DB) error {
+func (b *Buy) Validate() error {
 
 	if b.BitcoinAmount == 0 {
 		return errors.New("Required Bitcoin Amount")
@@ -54,7 +54,10 @@ func (b *Buy) Validate(db *gorm.DB) error {
 	if b.AuthorID < 1 {
 		return errors.New("Required Author")
 	}
+	return nil
+}
 
+func (b *Buy) ValidateBalance(db *gorm.DB) error {
 	var err error
 	var user = User{}
 

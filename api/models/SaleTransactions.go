@@ -44,7 +44,7 @@ func (s *Sale) Prepare(db *gorm.DB) {
 	}
 }
 
-func (s *Sale) Validate(db *gorm.DB) error {
+func (s *Sale) Validate() error {
 
 	if s.BitcoinAmount == 0 {
 		return errors.New("Required BitcoinAmount")
@@ -52,7 +52,10 @@ func (s *Sale) Validate(db *gorm.DB) error {
 	if s.AuthorID < 1 {
 		return errors.New("Required Author")
 	}
+	return nil
+}
 
+func (s *Sale) ValidateAmount(db *gorm.DB) error {
 	var err error
 	var user = User{}
 

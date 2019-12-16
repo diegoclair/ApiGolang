@@ -29,9 +29,14 @@ func (server *Server) CreateBuy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	buy.Prepare(server.DB)
-	err = buy.Validate(server.DB)
+	err = buy.Validate()
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	err = buy.ValidateBalance(server.DB)
+	if err != nil {
+		responses.ERROR(w, http.StatusAccepted, err)
 		return
 	}
 	uid, err := auth.ExtractTokenID(r)
@@ -138,7 +143,7 @@ func (server *Server) UpdateBuy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	buyUpdate.Prepare(server.DB)
-	err = buyUpdate.Validate(server.DB)
+	err = buyUpdate.Validate()
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return

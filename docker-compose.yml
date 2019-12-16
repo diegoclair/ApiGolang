@@ -9,7 +9,7 @@ services:
     volumes:
       - api:/usr/src/app/
     depends_on:
-      - fullstack-postgres          # Uncomment this when using postgres.
+      - fullstack-postgres
     networks:
       - fullstack
 

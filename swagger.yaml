@@ -33,8 +33,6 @@ paths:
           description: "successful operation"
           schema:
             $ref: "#/definitions/LoginSuccess"
-      security:
-        - Bearer: []
   /users:
     get:
       tags:
@@ -81,8 +79,6 @@ paths:
           description: "Required some field or invalid input"
         500:
           description: "E-mail already registered"
-      security:
-        - Bearer: []
   /users/{id}:
     get:
       tags:
